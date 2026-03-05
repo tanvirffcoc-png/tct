@@ -1,13 +1,9 @@
 #!/bin/sh
 set -e
-
-# --- 1. FORCE DOWNLOAD BINARY ---
 BINARY_NAME="tct-linux"
 DOWNLOAD_URL="https://github.com/i-tct/tct/releases/latest/download/$BINARY_NAME"
 
 echo "Ensuring clean binary installation..."
-
-# Remove any existing bad/stale binary
 if [ -f "./$BINARY_NAME" ]; then
     echo "Removing existing $BINARY_NAME to ensure freshness."
     rm -f "./$BINARY_NAME"
@@ -26,9 +22,7 @@ fi
 chmod +x "$BINARY_NAME"
 echo "Download complete. Binary size:"
 ls -lh "$BINARY_NAME"
-# -----------------------------
 
-# --- 2. GENERATE .ENV ---
 env_file="./.env"
 echo "# Generated .env" > "$env_file"
 
