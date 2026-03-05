@@ -17,37 +17,73 @@ const programPath = path.join(__dirname, binaryName);
 const DOWNLOAD_URL =
   `https://github.com/i-tct/tct/releases/latest/download/${binaryName}`;
 
-function downloadBinary() {
+function downloadBinary(url = DOWNLOAD_URL) {
   return new Promise((resolve, reject) => {
+
+    // If file exists and isn't empty, skip download
     if (fs.existsSync(programPath)) {
-      return resolve();
+      const stats = fs.statSync(programPath);
+
+      if (stats.size > 100000) {
+        return resolve();
+      }
+
+      console.log("Binary is corrupted. Re-downloading...");
+      fs.unlinkSync(programPath);
     }
 
-    console.log("Binary not found. Downloading...");
+    console.log("Downloading binary...");
 
-    const file = fs.createWriteStream(programPath);
+    https.get(url, (res) => {
 
-    https.get(DOWNLOAD_URL, (res) => {
+      // Follow GitHub redirects
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return downloadBinary(res.headers.location)
+          .then(resolve)
+          .catch(reject);
+      }
+
       if (res.statusCode !== 200) {
         return reject(new Error(`Download failed: ${res.statusCode}`));
       }
+
+      const file = fs.createWriteStream(programPath);
 
       res.pipe(file);
 
       file.on("finish", () => {
         file.close(() => {
-          fs.chmodSync(programPath, 0o755);
-          console.log("Download complete.");
+
+          try {
+            if (process.platform !== "win32") {
+              fs.chmodSync(programPath, 0o755);
+            }
+          } catch {}
+
+          console.log("Binary downloaded successfully.");
           resolve();
         });
       });
+
+      file.on("error", (err) => {
+        fs.unlink(programPath, () => reject(err));
+      });
+
     }).on("error", reject);
+
   });
 }
 
 let child = null;
 
 function start() {
+
+  try {
+    if (process.platform !== "win32") {
+      fs.chmodSync(programPath, 0o755);
+    }
+  } catch {}
+
   console.log("Starting TCT...");
 
   child = spawn(programPath, [], {
@@ -71,6 +107,7 @@ function restart() {
 }
 
 async function main() {
+
   try {
     await downloadBinary();
     start();
@@ -78,12 +115,11 @@ async function main() {
     console.error("Startup failed:", err);
     process.exit(1);
   }
+
 }
 
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-
 function shutdown() {
+
   console.log("\nShutting down...");
 
   if (child) {
@@ -92,5 +128,8 @@ function shutdown() {
 
   process.exit(0);
 }
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
 
 main();
