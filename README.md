@@ -1,8 +1,17 @@
-# TCT
+# <img src="https://t-ct.org/media/tct.png" alt="TCT Logo" width="80"/>
 
 [![Telegram](https://img.shields.io/badge/Telegram-Join-blue?style=for-the-badge&logo=telegram)](https://t.me/TheCarlTech)
+[![WhatsApp Channel](https://img.shields.io/badge/WhatsApp-Channel-green?style=for-the-badge&logo=whatsapp)](https://whatsapp.com/channel/0029VbCTviw8qIzlACm6Cy0t)
 [![GitHub version](https://img.shields.io/github/v/release/i-tct/tct?label=version&style=for-the-badge)](https://github.com/i-tct/tct/releases/latest)
 
+---
+
+## 📢 Community
+- **Telegram Group:** [Join here](https://t.me/TheCarlTech)  
+- **WhatsApp Channel:** [Follow here](https://whatsapp.com/channel/0029VbCTviw8qIzlACm6Cy0t)
+
+## 📦 Latest Release
+Grab the newest version from the [GitHub Releases](https://github.com/i-tct/tct/releases/latest).
 > *A Fast WA Bot Built with Go*  
 
 
